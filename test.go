@@ -12,6 +12,9 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	_ "github.com/go-sql-driver/mysql"
+	"net/http"
+
+	"github.com/rodkranz/fetch"
 	b "github.com/xrpdevs/golang-sgbnft-binding/SGBFTSO_ERC721"
 	a "github.com/xrpdevs/golang-sgbnft-binding/auctionmanager"
 	"log"
@@ -256,6 +259,23 @@ func main() {
 
 }
 
+func httpFetch(url string) {
+	opts := fetch.Options{
+		Header: http.Header{
+			"User-Agent": []string{"geterc721/1.0"},
+		},
+	}
+
+	f := fetch.New(&opts)
+
+	res, err := f.GetWithContext(context.Background(), url, nil)
+
+	log.Println(res, err)
+
+}
+
+//func updateTokenInfo(string addr, )
+
 func importToken(contractAddress common.Address) {
 	log.Println("\033[33mAdding Token\033[0m")
 	ctx := context.Background()
@@ -276,6 +296,20 @@ func importToken(contractAddress common.Address) {
 	symbol, _ := sgbferc721.Name(&callOpts)
 	ownerAddr, _ := sgbferc721.Owner(&callOpts)
 	metaBaseUrl, _ := sgbferc721.TokenURI(&callOpts, big.NewInt(1))
+	if strings.Contains(metaBaseUrl, "ipfs/") {
+		tmp := strings.Split(metaBaseUrl, "ipfs/")[1]
+		metaBaseUrl = "ipfs/" + tmp
+	} else if strings.Contains(metaBaseUrl, "ipns/") {
+		tmp := strings.Split(metaBaseUrl, "ipns/")[1]
+		metaBaseUrl = "ipns/" + tmp
+	}
+
+	var metaBaseUrl_ = strings.Split(metaBaseUrl, "/")
+
+	//	var baseurl = ""
+	for i := 1; i < len(metaBaseUrl_)-1; i++ {
+		//	metaBaseUrl_
+	}
 	firstu, _ := sgbferc721.TokenURI(&callOpts, big.NewInt(1))
 
 	query := `SELECT id FROM collections where contractAddress LIKE '` + contractAddress.String() + `' LIMIT 1`
@@ -285,6 +319,10 @@ func importToken(contractAddress common.Address) {
 	err := res.Scan(&out)
 	if err == nil {
 		log.Printf("Found: %s, %s, Total Supply: %s, Owner: %s\n", name, symbol, tot, ownerAddr.String())
+		query = "UPDATE collections set totalSupply = '" + tot.String() + "' WHERE contractAddress = '" + contractAddress.String() + "' LIMIT 1;"
+		_, err = dbHandleR.Exec(query)
+		check(err)
+		fmt.Printf("SQL Query: %s \n", query)
 		//		log.Println(out)
 	} else {
 		log.Println("Found")
