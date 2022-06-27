@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	_ "fmt"
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -132,6 +133,7 @@ func main() {
 				//fmt.Println(block.Time())              // 1529525947
 				//fmt.Println(block.Nonce())             // 130524141876765836
 				//fmt.Println(block.Transactions()) // 7
+
 				if len(block.Transactions()) > 0 {
 					for _, s := range block.Transactions() {
 						//fmt.Println(s.To())
@@ -498,6 +500,13 @@ func watchAuctionManagerEvents() {
 	//wlClient, err1 := ethclient.Dial(Config.RpcNode)
 	//check(err1)
 	//contractAddress := Config.AManager
+
+	var err2 error
+
+	_, err2 = wlClient2.SubscribeFilterLogs(context.Background(), ethereum.FilterQuery{}, logs)
+	if err2 != nil {
+		log.Fatal(err2)
+	}
 
 	_, err := wlClient2.SubscribeNewHead(context.Background(), headers)
 	if err != nil {
