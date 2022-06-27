@@ -11,6 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	_ "github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	_ "github.com/go-sql-driver/mysql"
 	"net/http"
@@ -79,6 +80,10 @@ func main() {
 	dbHandleR, err = sql.Open("mysql", sqlH)
 
 	check(err)
+
+	enc1 := crypto.Keccak256([]byte("submitPriceHashes(uint256,uint256[],bytes32[])"))
+
+	log.Println(enc1)
 
 	//	importToken(common.HexToAddress("0x2972ea6e6CC45c5837CE909DeF032DD325B48415"))
 	//importToken(common.HexToAddress("0xd83Ae2C70916a2360e23683A0d3a3556b2c09935"))
@@ -159,8 +164,8 @@ func main() {
 							txData := s.Data()
 
 							txString := hex.EncodeToString(txData)
-							if len(txString) > 3 {
-								functionCall := txString[0:4]
+							if len(txString) > 5 {
+								functionCall := txString[0:6]
 								log.Println("FN CALL: ", functionCall)
 							}
 
