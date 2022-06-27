@@ -335,8 +335,8 @@ func imageFetch(url string) {
 	log.Println("\033[31mFetching: ", url, "\033[0m")
 	var metaBaseUrl_ = strings.Split(url, "/")
 
-	od := metaBaseUrl_[(len(metaBaseUrl_) - 1)]
-	of := metaBaseUrl_[len(metaBaseUrl_)]
+	od := metaBaseUrl_[(len(metaBaseUrl_) - 2)]
+	of := metaBaseUrl_[(len(metaBaseUrl_) - 1)]
 
 	if _, err := os.Stat("./images/" + od); os.IsNotExist(err) {
 		_ = os.Mkdir("./images/"+od, os.ModeDir)
