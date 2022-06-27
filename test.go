@@ -88,7 +88,7 @@ func main() {
 
 	hStr := hexutil.Encode(enc1)
 
-	log.Println(hStr)
+	log.Println("AAA:", hStr)
 
 	funcMap[hStr[0:7]] = "submitPriceHashes(uint256,uint256[],bytes32[])"
 
