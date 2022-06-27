@@ -288,6 +288,16 @@ func metaFetch(url string) {
 
 	json.Unmarshal([]byte(res.String()), &iJson)
 
+	if strings.Contains(iJson.Image, "http://") || strings.Contains(iJson.Image, "https://") {
+		go imageFetch(iJson.Image)
+	} else {
+		//		imgurl := strings.Replace(iJson.Image, "http:/", "", -1)
+		//		imgurl = strings.Replace(imgurl, "https:/", "", -1)
+		imgurl := strings.Split(iJson.Image, "/ipfs/")[1]
+		go imageFetch("https://cloudflare-ipfs.com/ipfs/" + imgurl)
+
+	}
+
 	log.Println("\033[36m", iJson, err, "\033[0m")
 
 }
