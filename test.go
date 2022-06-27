@@ -106,6 +106,7 @@ func main() {
 	funcMap[hStr4] = "safeTransferFrom(address,address,uint256,bytes)"
 	funcMap[hStr5] = "transferFrom(address,address,uint256)"
 	funcMap[hStr6] = "transferOwnership(address)"
+	funcMap["a0712d68"] = "mint(uint256)"
 
 	//	importToken(common.HexToAddress("0x2972ea6e6CC45c5837CE909DeF032DD325B48415"))
 	//importToken(common.HexToAddress("0xd83Ae2C70916a2360e23683A0d3a3556b2c09935"))
