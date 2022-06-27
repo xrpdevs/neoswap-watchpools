@@ -159,10 +159,10 @@ func main() {
 							txData := s.Data()
 
 							txString := hex.EncodeToString(txData)
-
-							functionCall := txString[0:4]
-
-							log.Println("FN CALL: ", functionCall)
+							if len(txString) > 3 {
+								functionCall := txString[0:4]
+								log.Println("FN CALL: ", functionCall)
+							}
 
 							if isERC721 {
 								go importToken(*s.To())
