@@ -14,6 +14,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	_ "github.com/go-sql-driver/mysql"
 	"net/http"
+	"os"
 
 	"github.com/rodkranz/fetch"
 	b "github.com/xrpdevs/golang-sgbnft-binding/SGBFTSO_ERC721"
@@ -273,6 +274,19 @@ func main() {
 
 }
 
+func tokenURItoClean(tURI string) string {
+	if strings.Contains(tURI, "ipfs://") {
+		return strings.Replace(tURI, "ipfs://", "/ipfs/", -1)
+	} else if strings.Contains(tURI, "/ipfs") {
+		return "/ipfs" + strings.Split(tURI, "/ipfs")[1]
+	} else if strings.Contains(tURI, "ipns://") {
+		return strings.Replace(tURI, "ipns://", "/ipns/", -1)
+	} else if strings.Contains(tURI, "/ipns") {
+		return "/ipns" + strings.Split(tURI, "/ipns")[1]
+	}
+	return tURI
+}
+
 func metaFetch(url string) {
 	opts := fetch.Options{
 		Header: http.Header{
@@ -319,6 +333,18 @@ func metaFetch(url string) {
 
 func imageFetch(url string) {
 	log.Println("\033[31mFetching: ", url, "\033[0m")
+	var metaBaseUrl_ = strings.Split(url, "/")
+
+	od := metaBaseUrl_[(len(metaBaseUrl_) - 1)]
+	of := metaBaseUrl_[len(metaBaseUrl_)]
+
+	if _, err := os.Stat("./images/" + od); os.IsNotExist(err) {
+		_ = os.Mkdir("./images/"+od, os.ModeDir)
+		// TODO: handle error
+	}
+
+	outfile, _ := os.OpenFile("./images/"+od+"/"+of, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+
 	opts := fetch.Options{
 		Header: http.Header{
 			"User-Agent": []string{"geterc721/1.0"},
@@ -327,9 +353,10 @@ func imageFetch(url string) {
 
 	f := fetch.New(&opts)
 
-	res, err := f.GetWithContext(context.Background(), url, nil)
+	res, _ := f.GetWithContext(context.Background(), url, nil)
 
-	log.Println("\033[31mFetching: ", res, err, "\033[0m")
+	outfile.Write([]byte(res.String()))
+	outfile.Close()
 
 }
 
