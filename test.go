@@ -302,11 +302,11 @@ func metaFetch(url string) {
 			imgurl = strings.Split(iJson.Image, "ipns://")[1]
 			go imageFetch("https://cloudflare-ipfs.com/ipns/" + imgurl)
 		}
-		if strings.Contains(iJson.Image, "ipfs://") {
+		if strings.Contains(iJson.Image, "ipfs/") {
 			imgurl = strings.Split(iJson.Image, "ipfs/")[1]
 			go imageFetch("https://cloudflare-ipfs.com/ipfs/" + imgurl)
 		}
-		if strings.Contains(iJson.Image, "ipns://") {
+		if strings.Contains(iJson.Image, "ipns/") {
 			imgurl = strings.Split(iJson.Image, "ipns/")[1]
 			go imageFetch("https://cloudflare-ipfs.com/ipns/" + imgurl)
 		}
