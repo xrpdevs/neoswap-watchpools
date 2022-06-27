@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	_ "fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -45,6 +46,19 @@ var sgbferc721 *b.SGBFERC721
 type Cs struct {
 	RpcNode  string
 	AManager common.Address
+}
+
+type metaItem struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Image       string `json:"image"`
+	Dna         string `json:"dna"`
+	Edition     int    `json:"edition"`
+	Date        int64  `json:"date"`
+	Attributes  []struct {
+		TraitType string `json:"trait_type"`
+		Value     string `json:"value"`
+	} `json:"attributes"`
 }
 
 var Config = Cs{RpcNode: "wss://rpc.sgbftso.com/testws", AManager: common.HexToAddress("0x9191F9f9dB2d8AbCd5C787F9956852e65fBF83e5")}
@@ -259,7 +273,26 @@ func main() {
 
 }
 
-func httpFetch(url string) {
+func metaFetch(url string) {
+	opts := fetch.Options{
+		Header: http.Header{
+			"User-Agent": []string{"geterc721/1.0"},
+		},
+	}
+
+	f := fetch.New(&opts)
+
+	res, err := f.GetWithContext(context.Background(), url, nil)
+
+	var iJson metaItem
+
+	json.Unmarshal([]byte(res.String()), &iJson)
+
+	log.Println(iJson, err)
+
+}
+
+func imageFetch(url string) {
 	opts := fetch.Options{
 		Header: http.Header{
 			"User-Agent": []string{"geterc721/1.0"},
@@ -311,7 +344,7 @@ func importToken(contractAddress common.Address) {
 		baseurl += metaBaseUrl_[i] + "/"
 	}
 	log.Println("BASEURL", baseurl)
-	go httpFetch("https://cloudflare-ipfs.com/ipfs" + baseurl + "/1.json")
+	go metaFetch("https://cloudflare-ipfs.com/ipfs" + baseurl + "1.json")
 	firstu, _ := sgbferc721.TokenURI(&callOpts, big.NewInt(1))
 
 	query := `SELECT id FROM collections where contractAddress LIKE '` + contractAddress.String() + `' LIMIT 1`
