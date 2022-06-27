@@ -311,6 +311,7 @@ func importToken(contractAddress common.Address) {
 		baseurl += metaBaseUrl_[i] + "/"
 	}
 	log.Println("BASEURL", baseurl)
+	go httpFetch("https://cloudflare-ipfs.com/ipfs" + baseurl + "/1.json")
 	firstu, _ := sgbferc721.TokenURI(&callOpts, big.NewInt(1))
 
 	query := `SELECT id FROM collections where contractAddress LIKE '` + contractAddress.String() + `' LIMIT 1`
