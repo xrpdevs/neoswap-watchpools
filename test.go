@@ -86,14 +86,26 @@ func main() {
 
 	enc1 := crypto.Keccak256([]byte("submitPriceHashes(uint256,uint256[],bytes32[])"))
 	enc2 := crypto.Keccak256([]byte("revealPrices(uint256,uint256[],uint256[],uint256[])"))
+	enc3 := crypto.Keccak256([]byte("safeTransferFrom(address,address,uint256)"))
+	enc4 := crypto.Keccak256([]byte("safeTransferFrom(address,address,uint256,bytes)"))
+	enc5 := crypto.Keccak256([]byte("transferFrom(address,address,uint256)"))
+	enc6 := crypto.Keccak256([]byte("transferOwnership(address)"))
 
 	hStr1 := hexutil.Encode(enc1)[2:10]
 	hStr2 := hexutil.Encode(enc2)[2:10]
+	hStr3 := hexutil.Encode(enc3)[2:10]
+	hStr4 := hexutil.Encode(enc4)[2:10]
+	hStr5 := hexutil.Encode(enc5)[2:10]
+	hStr6 := hexutil.Encode(enc6)[2:10]
 
 	log.Println("AAA:", hStr1)
 
 	funcMap[hStr1] = "submitPriceHashes(uint256,uint256[],bytes32[])"
 	funcMap[hStr2] = "revealPrices(uint256,uint256[],uint256[],uint256[])"
+	funcMap[hStr3] = "safeTransferFrom(address,address,uint256)"
+	funcMap[hStr4] = "safeTransferFrom(address,address,uint256,bytes)"
+	funcMap[hStr5] = "transferFrom(address,address,uint256)"
+	funcMap[hStr6] = "transferOwnership(address)"
 
 	//	importToken(common.HexToAddress("0x2972ea6e6CC45c5837CE909DeF032DD325B48415"))
 	//importToken(common.HexToAddress("0xd83Ae2C70916a2360e23683A0d3a3556b2c09935"))
