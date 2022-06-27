@@ -24,9 +24,7 @@ import (
 	"strings"
 )
 
-// (c) 2022 Jamie prince
-
-var sqlH = "sgbftso:sgbftso1989@tcp(10.64.0.100)/sgbftso"
+var sqlH = "sgbnft:7Pft7LP46MJYKgX@tcp(10.64.45.1)/sgbnft"
 
 var dbHandleR *sql.DB // global database handle accessible from all the threads
 
@@ -51,7 +49,7 @@ type Cs struct {
 
 var Config = Cs{RpcNode: "wss://rpc.sgbftso.com/testws", AManager: common.HexToAddress("0x9191F9f9dB2d8AbCd5C787F9956852e65fBF83e5")}
 
-var MainNet = Cs{"ws://10.64.44.100:9650/ext/bc/C/ws", common.Address{0x0}}
+var MainNet = Cs{"ws://10.64.45.2:9650/ext/bc/C/ws", common.Address{0x0}}
 
 var logs = make(chan types.Log)
 var headers = make(chan *types.Header)
