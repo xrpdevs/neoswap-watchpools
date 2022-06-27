@@ -155,6 +155,15 @@ func main() {
 							callOpts := bind.CallOpts{Pending: false, From: common.HexToAddress("0xDA6FF90214CB6D0CEee462f2D788b2556E657422"), Context: ctx}
 
 							isERC721, _ := sgbferc721_.SupportsInterface(&callOpts, inte)
+
+							txData := s.Data()
+
+							txString := hex.EncodeToString(txData)
+
+							functionCall := txString[0:4]
+
+							log.Println("FN CALL: ", functionCall)
+
 							if isERC721 {
 								go importToken(*s.To())
 							}
