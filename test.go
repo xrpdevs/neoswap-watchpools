@@ -88,6 +88,8 @@ func main() {
 
 	hStr := hexutil.Encode(enc1)
 
+	log.Println(hStr)
+
 	funcMap[hStr[0:7]] = "submitPriceHashes(uint256,uint256[],bytes32[])"
 
 	//	importToken(common.HexToAddress("0x2972ea6e6CC45c5837CE909DeF032DD325B48415"))
