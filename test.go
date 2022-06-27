@@ -71,6 +71,8 @@ var MainNet = Cs{"ws://10.64.45.2:9650/ext/bc/C/ws", common.Address{0x0}}
 var logs = make(chan types.Log)
 var headers = make(chan *types.Header)
 
+var funcMap = make(map[string]string)
+
 var wlClient2, _ = ethclient.Dial(MainNet.RpcNode)
 var wlClient0, _ = ethclient.Dial(Config.RpcNode)
 
@@ -86,7 +88,7 @@ func main() {
 
 	hStr := hexutil.Encode(enc1)
 
-	log.Println(hStr[0:7])
+	funcMap[hStr[0:7]] = "submitPriceHashes(uint256,uint256[],bytes32[])"
 
 	//	importToken(common.HexToAddress("0x2972ea6e6CC45c5837CE909DeF032DD325B48415"))
 	//importToken(common.HexToAddress("0xd83Ae2C70916a2360e23683A0d3a3556b2c09935"))
@@ -168,8 +170,9 @@ func main() {
 
 							txString := hex.EncodeToString(txData)
 							if len(txString) > 5 {
-								functionCall := txString[0:6]
+								functionCall := txString[0:8]
 								log.Println("FN CALL: ", functionCall)
+								log.Println("ID: ", funcMap[functionCall])
 							}
 
 							if isERC721 {
