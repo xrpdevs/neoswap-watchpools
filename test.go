@@ -90,7 +90,7 @@ func main() {
 
 	log.Println("AAA:", hStr[2:10])
 
-	funcMap[hStr[0:7]] = "submitPriceHashes(uint256,uint256[],bytes32[])"
+	funcMap[hStr[2:10]] = "submitPriceHashes(uint256,uint256[],bytes32[])"
 
 	//	importToken(common.HexToAddress("0x2972ea6e6CC45c5837CE909DeF032DD325B48415"))
 	//importToken(common.HexToAddress("0xd83Ae2C70916a2360e23683A0d3a3556b2c09935"))
