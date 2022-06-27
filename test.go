@@ -9,6 +9,7 @@ import (
 	_ "fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	_ "github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -83,7 +84,9 @@ func main() {
 
 	enc1 := crypto.Keccak256([]byte("submitPriceHashes(uint256,uint256[],bytes32[])"))
 
-	log.Println(enc1)
+	hStr := hexutil.Encode(enc1)
+
+	log.Println(hStr[0:7])
 
 	//	importToken(common.HexToAddress("0x2972ea6e6CC45c5837CE909DeF032DD325B48415"))
 	//importToken(common.HexToAddress("0xd83Ae2C70916a2360e23683A0d3a3556b2c09935"))
