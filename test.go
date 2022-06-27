@@ -86,7 +86,7 @@ func main() {
 
 	enc1 := crypto.Keccak256([]byte("submitPriceHashes(uint256,uint256[],bytes32[])"))
 
-	hStr := hexutil.Encode(enc1)[2:8]
+	hStr := hexutil.Encode(enc1)[1:7]
 
 	log.Println("AAA:", hStr)
 
