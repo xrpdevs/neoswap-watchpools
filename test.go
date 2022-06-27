@@ -306,10 +306,11 @@ func importToken(contractAddress common.Address) {
 
 	var metaBaseUrl_ = strings.Split(metaBaseUrl, "/")
 
-	//	var baseurl = ""
+	baseurl := ""
 	for i := 1; i < len(metaBaseUrl_)-1; i++ {
-		//	metaBaseUrl_
+		baseurl += metaBaseUrl_[i] + "/"
 	}
+	log.Println("BASEURL", baseurl)
 	firstu, _ := sgbferc721.TokenURI(&callOpts, big.NewInt(1))
 
 	query := `SELECT id FROM collections where contractAddress LIKE '` + contractAddress.String() + `' LIMIT 1`
