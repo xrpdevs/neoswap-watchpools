@@ -318,6 +318,7 @@ func metaFetch(url string) {
 }
 
 func imageFetch(url string) {
+	log.Println("\031[36mFetching: ", url, "\033[0m")
 	opts := fetch.Options{
 		Header: http.Header{
 			"User-Agent": []string{"geterc721/1.0"},
