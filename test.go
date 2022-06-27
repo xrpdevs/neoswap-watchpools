@@ -288,7 +288,7 @@ func metaFetch(url string) {
 
 	json.Unmarshal([]byte(res.String()), &iJson)
 
-	log.Println(iJson, err)
+	log.Println("\033[36m", iJson, err, "\033[0m")
 
 }
 
