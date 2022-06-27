@@ -11,6 +11,7 @@ require (
 	github.com/ipfs/interface-go-ipfs-core v0.6.1
 	github.com/libp2p/go-libp2p-core v0.14.0
 	github.com/multiformats/go-multiaddr v0.5.0
+	github.com/rodkranz/fetch v1.2.0
 	github.com/xrpdevs/golang-sgbnft-binding/SGBFTSO_ERC721 v0.0.0-20220228035600-83cb337c4c57
 	github.com/xrpdevs/golang-sgbnft-binding/auctionmanager v0.0.0-20220227230353-22f813788c46
 )
@@ -186,7 +187,6 @@ require (
 	github.com/prometheus/common v0.30.0 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/rjeczalik/notify v0.9.1 // indirect
-	github.com/rodkranz/fetch v1.2.0 // indirect
 	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect
 	github.com/spacemonkeygo/spacelog v0.0.0-20180420211403-2296661a0572 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect

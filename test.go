@@ -24,6 +24,8 @@ import (
 	"strings"
 )
 
+// (c) 2022 Jamie prince
+
 var sqlH = "sgbftso:sgbftso1989@tcp(10.64.0.100)/sgbftso"
 
 var dbHandleR *sql.DB // global database handle accessible from all the threads
