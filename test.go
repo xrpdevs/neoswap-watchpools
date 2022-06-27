@@ -318,7 +318,7 @@ func metaFetch(url string) {
 }
 
 func imageFetch(url string) {
-	log.Println("\031[36mFetching: ", url, "\033[0m")
+	log.Println("\033[31mFetching: ", url, "\033[0m")
 	opts := fetch.Options{
 		Header: http.Header{
 			"User-Agent": []string{"geterc721/1.0"},
@@ -329,7 +329,7 @@ func imageFetch(url string) {
 
 	res, err := f.GetWithContext(context.Background(), url, nil)
 
-	log.Println(res, err)
+	log.Println("\033[31mFetching: ", res, err, "\033[0m")
 
 }
 
