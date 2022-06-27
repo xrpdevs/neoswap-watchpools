@@ -293,8 +293,23 @@ func metaFetch(url string) {
 	} else {
 		//		imgurl := strings.Replace(iJson.Image, "http:/", "", -1)
 		//		imgurl = strings.Replace(imgurl, "https:/", "", -1)
-		imgurl := strings.Split(iJson.Image, "/ipfs/")[1]
-		go imageFetch("https://cloudflare-ipfs.com/ipfs/" + imgurl)
+		var imgurl string
+		if strings.Contains(iJson.Image, "ipfs://") {
+			imgurl = strings.Split(iJson.Image, "ipfs://")[1]
+			go imageFetch("https://cloudflare-ipfs.com/ipfs/" + imgurl)
+		}
+		if strings.Contains(iJson.Image, "ipns://") {
+			imgurl = strings.Split(iJson.Image, "ipns://")[1]
+			go imageFetch("https://cloudflare-ipfs.com/ipns/" + imgurl)
+		}
+		if strings.Contains(iJson.Image, "ipfs://") {
+			imgurl = strings.Split(iJson.Image, "ipfs/")[1]
+			go imageFetch("https://cloudflare-ipfs.com/ipfs/" + imgurl)
+		}
+		if strings.Contains(iJson.Image, "ipns://") {
+			imgurl = strings.Split(iJson.Image, "ipns/")[1]
+			go imageFetch("https://cloudflare-ipfs.com/ipns/" + imgurl)
+		}
 
 	}
 
