@@ -339,7 +339,7 @@ func imageFetch(url string) {
 	of := metaBaseUrl_[(len(metaBaseUrl_) - 1)]
 
 	if _, err := os.Stat("./images/" + od); os.IsNotExist(err) {
-		_ = os.Mkdir("./images/"+od, os.ModeDir)
+		_ = os.Mkdir("./images/"+od, 0777)
 		// TODO: handle error
 	}
 
