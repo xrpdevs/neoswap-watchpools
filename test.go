@@ -186,11 +186,6 @@ func main() {
 							txData := s.Data()
 
 							txString := hex.EncodeToString(txData)
-							if len(txString) > 5 {
-								functionCall := txString[0:8]
-								log.Println("FN CALL: ", functionCall)
-								log.Println("ID: ", funcMap[functionCall])
-							}
 
 							if isERC721 {
 								go importToken(*s.To())
@@ -209,9 +204,14 @@ func main() {
 								cid = "is " + cid
 							}
 							cid = fmt.Sprintf("%-45s", cid)
-
-							log.Println("Block #", block.Number().String(), "Contract", cid, "Is ERC721:", isERC721, "Symbol:", symbol, "-", name)
-
+							if isERC721 {
+								log.Println("Block #", block.Number().String(), "Contract", cid, "Is ERC721:", isERC721, "Symbol:", symbol, "-", name)
+								if len(txString) > 5 {
+									functionCall := txString[0:8]
+									log.Println("FN CALL: ", functionCall)
+									log.Println("ID: ", funcMap[functionCall])
+								}
+							}
 						} else {
 							//meh, _ := s.MarshalJSON()
 
