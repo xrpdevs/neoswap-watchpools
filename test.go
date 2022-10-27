@@ -206,6 +206,8 @@ func httpHandler(w http.ResponseWriter, r *http.Request) {
 		pi = val
 	}
 
+	period = "2w"
+
 	if period == "y" {
 		intP = 60 * 60 * 24 * 365
 	} else if period == "6m" {
