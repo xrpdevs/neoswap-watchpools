@@ -1,0 +1,27 @@
+[Unit]
+Description=watchpools service
+ConditionPathExists=/home/daemons/neoswap-watchpools/
+After=network.target
+
+[Service]
+Type=simple
+User=nobody
+Group=nogroup
+LimitNOFILE=1024
+
+Restart=on-failure
+RestartSec=10
+startLimitIntervalSec=60
+WorkingDirectory=/home/daemons/neoswap-watchpools/
+ExecStart=/home/daemons/neoswap-watchpools/test
+ExecReload=/bin/kill -9 -- $MAINPID && systemctl start watchPools.service
+ExecStop=/bin/kill -- $MAINPID
+TimeoutStopSec=5
+KillMode=process
+# make sure log directory exists and owned by syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=neoswap-watchpools
+
+[Install]
+WantedBy=multi-user.target
