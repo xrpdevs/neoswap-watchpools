@@ -245,7 +245,8 @@ func httpHandler(w http.ResponseWriter, r *http.Request) {
 
 	var count int64 = 0
 	// SELECT * FROM (SELECT @row:=0) temp, prices WHERE (@row:=@row + 1) % 2 = 1 and id > 5
-	query := "select (ts*1000),c0addr,c1addr,price from prices where `poolAddr` = '" + paddr + "' and `ts` > (UNIX_TIMESTAMP() - " + fmt.Sprintf("%d", intP) + ") order by `ts` desc limit 100"
+	query := "SELECT @bob := MAX(`ts`) from prices where `poolAddr` = '" + paddr + "'; select (ts*1000),c0addr,c1addr,price from prices where `poolAddr` = '" + paddr + "' and `ts` > (@bob - " + fmt.Sprintf("%d", intP) + ") order by `ts` desc limit 100"
+
 	log.Println(query)
 	res, err := dbHandleR.Query(query)
 	check(err)
