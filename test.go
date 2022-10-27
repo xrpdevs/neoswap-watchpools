@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	_ "fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -14,19 +15,15 @@ import (
 	"log"
 	"math/big"
 	_ "math/big"
+	"net/http"
 	"runtime"
+	"strconv"
 	"time"
 )
 
-var sqlH = "dexcharts:Eibeu4gahquuch2EiRie(10.64.45.1)/dex"
+var sqlH = "dexcharts:Eibeu4gahquuch2EiRie@tcp(10.64.45.1)/dex"
 
 var dbHandleR *sql.DB // global database handle accessible from all the threads
-
-//var clients = make(map[string]*NeoLP)
-
-var NEOLP *NeoLP
-
-var NEOF *NeoF
 
 var swapEvents = make(chan *NeoLPSwap)
 
@@ -45,24 +42,19 @@ type PairInfo struct {
 	LpTokens     *big.Int
 }
 
-type metaItem struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Image       string `json:"image"`
-	Dna         string `json:"dna"`
-	Edition     int    `json:"edition"`
-	Date        int64  `json:"date"`
-	Attributes  []struct {
-		TraitType string `json:"trait_type"`
-		Value     string `json:"value"`
-	} `json:"attributes"`
-}
-
-var Config = Cs{RpcNode: "wss://rpc.sgbftso.com/http", AManager: common.HexToAddress("0xA08db6fe8D16067E3a85073cADFf5e4660ce8200")}
+var Config = Cs{RpcNode: "ws://10.64.45.1:9660/ext/bc/C/ws", AManager: common.HexToAddress("0xA08db6fe8D16067E3a85073cADFf5e4660ce8200")}
 var MainNet = Cs{"ws://10.64.45.1:9660/ext/bc/C/ws", common.Address{0x0}}
 var Flare = Cs{"ws://10.64.45.2:9650/ext/bc/C/ws", common.Address{0x0}}
 var HBAR = Cs{"ws://10.64.45.2:9650/ext/bc/C/ws", common.Address{0x0}}
 var NEAR = Cs{"ws://10.64.45.2:9650/ext/bc/C/ws", common.Address{0x0}}
+
+type PriceResponse struct {
+	poolAddr string
+	c0Addr   string
+	c1Addr   string
+	ts       string
+	price    string
+}
 
 var configs = make(map[int]Cs)
 
@@ -70,7 +62,7 @@ var callOptsFac bind.CallOpts
 
 var wlClient2 *ethclient.Client
 
-//var wlClient0, _ = ethclient.Dial(Config.RpcNode)
+var info = make(map[common.Address]PairInfo)
 
 func main() {
 
@@ -80,7 +72,10 @@ func main() {
 	//configs[3]=HBAR
 	//configs[4]=NEAR
 
+	http.HandleFunc("/", httpHandler)
+
 	var err error
+	check(err)
 
 	dbHandleR, err = sql.Open("mysql", sqlH)
 
@@ -104,7 +99,6 @@ func main() {
 	watchOpts := &bind.WatchOpts{Context: context.Background(), Start: nil}
 	var errors = make(map[common.Address]error)
 	var clients = make(map[common.Address]*NeoLP)
-	var info = make(map[common.Address]PairInfo)
 
 	for i = 0; i < apl.Int64(); i++ {
 		addr, err := vactory.AllPairs(&callOptsFac, big.NewInt(i))
@@ -117,13 +111,11 @@ func main() {
 
 	}
 
-	log.Println(clients)
-	log.Println(info)
+	//log.Println(clients)
+	//log.Println(info)
+	log.Println("watchPools loaded, watching", len(clients), "pools...")
 
-	//	importToken(common.HexToAddress("0x2972ea6e6CC45c5837CE909DeF032DD325B48415"))
-	//importToken(common.HexToAddress("0xd83Ae2C70916a2360e23683A0d3a3556b2c09935"))
-
-	//go watchAuctionManagerEvents()
+	go serve()
 
 	for {
 		select {
@@ -175,18 +167,139 @@ func main() {
 
 				ts := fmt.Sprintf("%d", time.Now().Unix())
 
-				sql := "INSERT INTO `prices` (`id`, `ts`, `pooladdr`, `c0addr`, `c1addr`, `price`) " +
-					"VALUES ('1', '" + ts + "', '" + msg.Raw.Address.String() + "', '" + c0 + "', '" + c1 + "', '" + fmt.Sprintf("%f", val3) + "') "
+				sql := "INSERT INTO `prices` ( `ts`, `pooladdr`, `c0addr`, `c1addr`, `price`) " +
+					"VALUES ( '" + ts + "', '" + msg.Raw.Address.String() + "', '" + c0 + "', '" + c1 + "', '" + fmt.Sprintf("%f", val3) + "') "
 
 				_, err := dbHandleR.Exec(sql)
 				check(err)
 
 			}
 
-			// if this price data is from our dex, save it to sql database.
-
 		}
 	}
+
+}
+
+func serve() {
+
+	errhttp := http.ListenAndServe("10.65.0.1"+":"+strconv.Itoa(6221), nil)
+
+	check(errhttp)
+}
+
+func httpHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "content-type")
+	w.Header().Add("Content-Type", "text/plain; version=0.0.4; charset=utf-8")
+
+	log.Printf(r.RequestURI)
+
+	var intP int64
+
+	period := r.FormValue("period")
+	paddr := r.FormValue("paddr")
+
+	addrchk := common.HexToAddress(paddr)
+	var pi PairInfo
+
+	if val, ok := info[addrchk]; ok {
+		pi = val
+	}
+
+	if period == "y" {
+		intP = 60 * 60 * 24 * 365
+	} else if period == "6m" {
+		intP = 60 * 60 * 12 * 365
+	} else if period == "3m" {
+		intP = 60 * 60 * 6 * 365
+	} else if period == "1m" {
+		intP = 60 * 60 * 24 * 30
+	} else if period == "2w" {
+		intP = 60 * 60 * 24 * 15
+	} else if period == "1w" {
+		intP = 60 * 60 * 24 * 7
+	} else if period == "3d" {
+		intP = 60 * 60 * 24 * 3
+	} else if period == "1d" {
+		intP = 60 * 60 * 24
+	} else if period == "12h" {
+		intP = 60 * 60 * 24 * 3
+	} else if period == "6h" {
+		intP = 60 * 60 * 24 * 3
+	} else if period == "3h" {
+		intP = 60 * 60 * 24 * 3
+	} else {
+		intP = 60 * 60 * 24
+	}
+
+	type PairRow struct {
+		ts     string
+		c0addr string
+		c1addr string
+		price  string
+	}
+
+	record := PairRow{}
+
+	rows := make(map[int64]PairRow)
+
+	var count int64 = 0
+	// SELECT * FROM (SELECT @row:=0) temp, prices WHERE (@row:=@row + 1) % 2 = 1 and id > 5
+	query := "select (ts*1000),c0addr,c1addr,price from prices where `poolAddr` = '" + paddr + "' and `ts` > (UNIX_TIMESTAMP() - " + fmt.Sprintf("%d", intP) + ") order by `ts` desc limit 100"
+	log.Println(query)
+	res, err := dbHandleR.Query(query)
+	check(err)
+	for res.Next() {
+		err := res.Scan(&record.ts, &record.c0addr, &record.c1addr, &record.price)
+		check(err)
+		rows[count] = record
+		//log.Println(record)
+		count++
+	}
+	err = res.Close()
+	check(err)
+
+	type xy struct {
+		X int64  `json:"x"`
+		Y string `json:"y"`
+	}
+
+	type dataset struct {
+		Label string `json:"label"`
+		Data  []xy   `json:"data"`
+	}
+
+	var ds [2]dataset
+
+	ds[0].Label = pi.Pair0Name + "-" + pi.Pair1Name
+	ds[1].Label = pi.Pair1Name + "-" + pi.Pair0Name
+
+	for i := int64(0); i < count; i++ {
+		if rows[i].c0addr == pi.Pair0.String() {
+			tmp, _ := strconv.ParseInt(rows[i].ts, 10, 64)
+			ds[0].Data = append(ds[0].Data, xy{tmp, rows[i].price})
+			// add to dataset 1
+		} else {
+			tmp, _ := strconv.ParseInt(rows[i].ts, 10, 64)
+			ds[1].Data = append(ds[1].Data, xy{tmp, rows[i].price})
+			// add to dataset 2
+		}
+	}
+
+	var output string
+
+	jsonString1, err := json.Marshal(ds)
+
+	//log.Println(jsonString1)
+
+	check(err)
+
+	output += string(jsonString1)
+
+	log.Printf("Output: \n" + output)
+
+	_, err = fmt.Fprintf(w, output)
+	check(err)
 
 }
 
